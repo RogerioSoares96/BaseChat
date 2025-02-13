@@ -2,3 +2,4 @@
 .pytest_cache
 .script.sh
 .idea
+.__pycache__
