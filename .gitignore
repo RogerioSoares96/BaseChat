@@ -1,1 +1,4 @@
 ./db/messages.db
+.pytest_cache
+.script.sh
+.idea
