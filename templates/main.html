@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Box with Send Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="message" placeholder="Type your message here...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div class="container">
+        <ul id="message_receiver">
+        </ul>
+    </div>
+
+    <script>
+        async function load_chat_history () {
+            let response = await fetch("http://127.0.0.1:8000/chat_show")
+            let data = await response.json()
+            for (let x in data) {
+                let list_item = document.createElement("li")
+                let received_message = document.createTextNode(JSON.stringify(data[x]))
+                list_item.append(received_message)
+                let list = document.getElementById("message_receiver")
+                list.append(list_item)
+            }
+        }
+        load_chat_history()
+        const socket = new WebSocket("ws://127.0.0.1:8000/chat")
+        socket.onmessage = function(event) {
+            let list_item = document.createElement("li")
+            let received_message = document.createTextNode(event.data)
+            list_item.append(received_message)
+            let list = document.getElementById("message_receiver")
+            list.append(list_item)
+        }
+        async function sendMessage() {
+            console.log(socket.readyState)
+            if (socket.readyState === 1) {
+                let message = document.getElementById('message').value;
+                socket.send(message)
+            }
+            else {
+                console.log(socket.readyState)
+            }
+        }
+    </script>
+</body>
+</html>
